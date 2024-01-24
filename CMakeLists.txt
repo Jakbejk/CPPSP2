@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(_SP2 main.cpp
         MpInt.h
-        Test.h)
+        Test.h
+        MpTerm.h)
