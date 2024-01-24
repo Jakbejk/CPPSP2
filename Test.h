@@ -29,6 +29,14 @@ std::string printInfo(const std::string &s) {
     return s;
 #endif
 }
+constexpr auto longLongMin = std::numeric_limits<long long>::min();
+constexpr auto longLongMax = std::numeric_limits<long long>::max();
+
+constexpr auto intMin = std::numeric_limits<int>::min();
+constexpr auto intMax = std::numeric_limits<int>::max();
+
+constexpr auto shortMin = std::numeric_limits<short>::min();
+constexpr auto shortMax = std::numeric_limits<short>::max();
 
 void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << "--------------------------------------------------------" << std::endl;
@@ -37,12 +45,10 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << "--------------------------------------------------------" << std::endl;
     std::cout << "--------------------------------------------------------" << std::endl;
 
-    auto min = std::numeric_limits<long long>::min();
-    auto max = std::numeric_limits<long long>::max();
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "+" "max + max" overflow test)") << std::endl;
     try {
-        auto res = MpInt<8>(max) + MpInt<8>(max);
+        auto res = MpInt<8>(longLongMax) + MpInt<8>(longLongMax);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -57,7 +63,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "+" "min + min" overflow test)") << std::endl;
     try {
-        MpInt<8>(min) + MpInt<8>(min);
+        MpInt<8>(longLongMin) + MpInt<8>(longLongMin);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -72,7 +78,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "-" "max - min" overflow test)") << std::endl;
     try {
-        MpInt<8>(max) - MpInt<8>(min);
+        MpInt<8>(longLongMax) - MpInt<8>(longLongMin);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -87,7 +93,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "-" "min - max" overflow test)") << std::endl;
     try {
-        MpInt<8>(min) - MpInt<8>(max);
+        MpInt<8>(longLongMin) - MpInt<8>(longLongMax);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -102,7 +108,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "*" "max * max" overflow test)") << std::endl;
     try {
-        MpInt<8>(max) * MpInt<8>(max);
+        MpInt<8>(longLongMax) * MpInt<8>(longLongMax);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -117,7 +123,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "*" "min * max" overflow test)") << std::endl;
     try {
-        MpInt<8>(min) * MpInt<8>(max);
+        MpInt<8>(longLongMin) * MpInt<8>(longLongMax);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -132,7 +138,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "*" "max * min" overflow test)") << std::endl;
     try {
-        MpInt<8>(max) * MpInt<8>(min);
+        MpInt<8>(longLongMax) * MpInt<8>(longLongMin);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -148,7 +154,7 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
     std::cout << std::endl;
     std::cout << printInfo(R"(Operator "*" "min * min" overflow test)") << std::endl;
     try {
-        MpInt<8>(min) * MpInt<8>(min);
+        MpInt<8>(longLongMin) * MpInt<8>(longLongMin);
         std::cout << printWrong("Test failed") << std::endl;
         testFailed++;
     } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
@@ -171,12 +177,10 @@ void testOverflow(std::size_t &testSuccess, std::size_t &testFailed) {
 
 
 void testRandomInts(std::size_t &success, std::size_t &failed) {
-    auto min = std::numeric_limits<int>::min();
-    auto max = std::numeric_limits<int>::max();
     std::random_device rd;
     std::size_t iterationSuccess, iterationFailed;
     std::mt19937_64 eng(rd());
-    std::uniform_int_distribution<long long int> random(min, max);
+    std::uniform_int_distribution<long long int> random(intMin, intMax);
     std::cout << "--------------------------------------------------------" << std::endl;
     std::cout << "--------------------------------------------------------" << std::endl;
     std::cout << printInfo("Random int operations testing start") << std::endl;
@@ -226,8 +230,7 @@ void testRandomInts(std::size_t &success, std::size_t &failed) {
 
     std::cout << std::endl;
     std::cout << printInfo("Operator \"*\"") << std::endl;
-    auto shortMin = std::numeric_limits<short>::min();
-    auto shortMax = std::numeric_limits<short>::max();
+
     std::random_device shortRd;
     std::mt19937_64 shortEng(shortRd());
     std::uniform_int_distribution<short> shortRandom(shortMin, shortMax);
@@ -237,7 +240,7 @@ void testRandomInts(std::size_t &success, std::size_t &failed) {
         auto aMpInt = MpInt<20>(a);
         auto bMpInt = MpInt<20>(b);
         auto c = aMpInt * bMpInt;
-        if ((c == MpInt<20>(a * b))) {
+        if ((c == MpInt<20>(static_cast<long long>(a) * b))) {
             iterationSuccess++;
         } else {
             iterationFailed++;

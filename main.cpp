@@ -3,15 +3,15 @@
 #include "MpTerm.h"
 
 void printHelp() {
-    std::cout << "1 - Start konzole s neomezenou přesností čísla." << std::endl;
-    std::cout << "2 - Start konzole s omezenou přesností čísla na 32-bitů." << std::endl;
-    std::cout << "2 - Showcase využití knihovny pro práci s neomezenými čísly." << std::endl;
+    std::cout << "1 - Start konzole s neomezenou presnosti cisla." << std::endl;
+    std::cout << "2 - Start konzole s omezenou presnosti cisla na 32-bitu." << std::endl;
+    std::cout << "3 - Showcase vyuziti knihovny pro praci s neomezenymy cisly." << std::endl;
 }
 
 
 int main(int argc, char **argv) {
     if (argc != 2) {
-        std::cout << "Program potřebuje právě jeden argument [1|2|3]." << std::endl;
+        std::cout << "Program potrebuje prave jeden argument [1|2|3]." << std::endl;
         printHelp();
         return EXIT_FAILURE;
     }

@@ -5,6 +5,7 @@
 #include <array>
 #include <map>
 #include <optional>
+#include <functional>
 
 /**
  * @brief Size of terminal bank - last used memory
@@ -45,36 +46,40 @@ private :
     private:
         /** Maximal size of rotating list */
         const std::size_t rotatingSize;
-        /** Current index of rotating list */
-        std::size_t index;
         /** Items of rotating list */
-        std::vector<MpInt<bytePrecision>> results;
+        std::vector<MpInt<bytePrecision> *> results; // Not the best use of RAII, but I couldn't think of anything better. 
     public:
         /**
          * @brief Set maximal size of rotating list.
          * @param size Maximal size of rotating list.
          */
-        explicit RotatingVector(std::size_t size) : rotatingSize(size), index(0) {
+        explicit RotatingVector(std::size_t size) : rotatingSize(size) {
 
+        }
+
+        ~RotatingVector() {
+            for (auto item : this->results) {
+                delete(item);
+            }
         }
 
         /**
          * @brief Push item to begin of rotating list. If list is full, pop last item.
          * @param item Item to be pushed.
          */
-        void push(const MpInt<bytePrecision> item) {
-            if (this->index == this->rotatingSize) {
+        void push(const MpInt<bytePrecision> &item) {
+            if (this->results.size() == this->rotatingSize) {
+                auto value = this->results[this->results.size() - 1];
                 this->results.pop_back();
-            } else {
-                this->index++;
+                delete(value);
             }
-            this->results.insert(this->results.begin(), item);
+            this->results.insert(this->results.begin(), new MpInt<bytePrecision>(item));
         }
 
         /**
          * @return All items of rotating list.
          */
-        std::vector<MpInt<bytePrecision>> getResults() const {
+        std::vector<MpInt<bytePrecision> *> getResults() const {
             return results;
         }
 
@@ -202,7 +207,7 @@ private:
             if (bank.getResults().size() <= index) {
                 return std::nullopt;
             }
-            return bank.getResults()[index];
+            return *bank.getResults()[index];
         } else {
             return MpInt<bytePrecision>(std::stoll(term));
         }
@@ -252,7 +257,7 @@ private:
             unaryTerm = trim(command);
             unaryTerm = unaryTerm.substr(0, unaryTerm.length() - 1);
         } else {
-            std::cout << "Neznámý výraz." << std::endl;
+            std::cout << "Neznamy vyraz." << std::endl;
             return;
         }
         try {
@@ -262,7 +267,7 @@ private:
                 if (term.has_value()) {
                     result = this->unaryOperatorMap[oper](term.value());
                 } else {
-                    std::cout << "Neznámý výraz." << std::endl;
+                    std::cout << "Neznamy vyraz." << std::endl;
                     return;
                 }
             } else {
@@ -271,14 +276,14 @@ private:
                 if (term1.has_value() && term2.has_value()) {
                     result = this->binaryOperatorMap[oper](term1.value(), term2.value());
                 } else {
-                    std::cout << "Neznámý výraz." << std::endl;
+                    std::cout << "Neznamy vyraz." << std::endl;
                     return;
                 }
             }
             bank.push(result);
             std::cout << result.toDecimal() << std::endl;
         } catch (MpIntException<MpInt<MP_INT_UNLIMITED>> &e) {
-            std::cout << "Došlo k přetečení čísla." << std::endl;
+            std::cout << "Doslo k preteceni cisla." << std::endl;
             std::cout << e.overflow.toDecimal() << std::endl;
         }
     }
@@ -288,11 +293,11 @@ private:
      */
     void printBank() {
         if (bank.getResults().empty()) {
-            std::cout << "Banka je prázdná!" << std::endl;
+            std::cout << "Banka je prazdna!" << std::endl;
         } else {
             std::size_t index = 0;
-            for (MpInt<bytePrecision> item: bank.getResults()) {
-                std::cout << "$" << ++index << ": " << item.toDecimal() << std::endl;
+            for (MpInt<bytePrecision> *item: bank.getResults()) {
+                std::cout << "$" << ++index << ": " << item->toDecimal() << std::endl;
             }
         }
     }
@@ -343,8 +348,8 @@ private:
                    "--------------------------------------------------------------------------------------------------------------------\n"
                    "--------------------------------------------------------------------------------------------------------------------"
                 << std::endl;
-        std::cout << "Vítejte v kalkulačce na neomezená čísla." << std::endl;
-        std::cout << "Zadejte jednoduchý matematický výraz s nejvýše jednou operací +, -, *, / nebo !." << std::endl;
+        std::cout << "Vitejte v kalkulacce na neomezena cisla." << std::endl;
+        std::cout << "Zadejte jednoduchy matematicky vyraz s nejvyse jednou operaci +, -, *, / nebo !." << std::endl;
     }
 
     /**
@@ -376,6 +381,6 @@ public:
                 processCalculation(command);
             }
         }
-        std::cout << "Děkujeme za využití naší kalkulačky! :)" << std::endl;
+        std::cout << "Dekujeme za vyuziti nasi kalkulacky! :)" << std::endl;
     }
 };

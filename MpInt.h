@@ -3,6 +3,7 @@
 #include <iostream>
 #include <bitset>
 #include <cmath>
+#include <sstream>
 #include <vector>
 #include <algorithm>
 
@@ -305,7 +306,7 @@ public:
      * @return This with reversed bits.
      */
     MpInt operator~() {
-        for (long &i: this->bitset) {
+        for (bitsetItem &i: this->bitset) {
             i = ~i;
         }
         return *this;
@@ -592,7 +593,7 @@ public:
     template<std::size_t otherBytePrecision>
     requires SizeLimitation<otherBytePrecision>
     friend bool operator>=(const MpInt<bytePrecision> &a, const MpInt<otherBytePrecision> &b) {
-        const size_t size = std::max(a.bitPrecision, a.bitPrecision);
+        const size_t size = std::max(a.getCurrentCapacity(), b.getCurrentCapacity());
         if (a.isNegative() && !b.isNegative()) return false;
         if (!a.isNegative() && b.isNegative()) return true;
         bool bothNegative = a.isNegative();
@@ -694,7 +695,8 @@ public:
         auto copy = this->abs();
         auto binary = copy.toBinary();
         std::vector<int> intNumbers, tmpIntNumbers;
-        int bitLength, tmpIntLength, intLength, index;
+        int bitLength, tmpIntLength, intLength;
+        std::size_t index;
 
         intNumbers.resize(binary.length());
         tmpIntNumbers.resize(binary.length());
